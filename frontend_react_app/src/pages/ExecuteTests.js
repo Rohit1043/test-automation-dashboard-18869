@@ -72,7 +72,7 @@ export function ExecuteTests() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Execute Test Script</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Mock executing generated test scripts and show a simple run summary.
+          Run a mocked execution and review a brief run summary.
         </p>
       </div>
 
