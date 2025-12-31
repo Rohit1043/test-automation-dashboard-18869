@@ -2,26 +2,6 @@
 
 React + TailwindCSS frontend implementing a classic, professional dashboard UI with a persistent left sidebar, top bar branding, and deep-linkable routes for core workflows.
 
-## Features implemented
-
-- Dashboard shell: **Sidebar + TopBar + main content**
-- Routes:
-  - Home (mocked file/folder browsing + drag-and-drop uploads)
-  - Refine Requirements (placeholder)
-  - Generate Test Cases (placeholder)
-  - Generate Test Scripts (placeholder)
-  - Execute Tests (placeholder)
-  - Reports (placeholder)
-  - Login (**mock/local-only auth**)
-- Corporate Navy theme (Primary `#1E3A8A`, Secondary `#F59E0B`)
-- Centralized runtime config loader with safe defaults
-- State management via React Context:
-  - Auth state (**mock/local-only login/logout/me**)
-  - UI state (sidebar collapse)
-  - Toast notifications
-
----
-
 ## Getting started
 
 From `frontend_react_app/`:
@@ -45,7 +25,6 @@ Open: http://localhost:3000
 - Unauthenticated users attempting to access protected routes are redirected to:
   - `/login`
 - After successful login, the app redirects back to the originally requested route.
-- The TopBar shows the authenticated user and a working **Sign out** action.
 
 ### Sample credentials
 
@@ -64,44 +43,51 @@ Two users are hardcoded:
 
 ---
 
-## Environment variables
+## Features implemented (UI + mocked behaviors)
 
-All env vars are optional. The app will run without them (defaults are used).
+### Home (`/`)
+- **Browse Folder** and **Browse File** buttons
+  - Folder selection uses `<input type="file" webkitdirectory>` (Chromium-based browsers)
+- A textbox shows the selected file/folder label
+  - **In-memory only** (clears on refresh; not persisted)
+- **Upload** button simulates uploading the selection
+  - Success toast: **"File uploaded"**
+  - Warning toast when nothing is selected
+- Drag & drop area
+  - Highlights on drag over
+  - On drop, sets textbox value and enables upload
 
-Copy the example file if desired:
+### Refine Requirement (`/requirements`)
+- Button: **Run Refined Requirement**
+- Progress bar animates ~2–3 seconds
+- Completion toast: **"Refine Requirement completed"**
 
-```bash
-cp .env.example .env
-```
+### Generate Test Cases (`/test-cases`)
+- Buttons:
+  - **Generate Test Cases** (runs progress + seeds mock cases)
+  - **View Generated Test Cases** (shows a table)
+  - **Pre-Condition** (opens modal with textarea)
+- Saving pre-condition:
+  - Stored in memory only (no disk writes)
+  - Toast: **"Pre-Condition saved"**
+  - Included in subsequent generated test cases
 
-Supported variables:
+### Generate Test Scripts (`/test-scripts`)
+- Button: **Run Generate Test Script**
+- Progress bar animates ~2–3 seconds
+- Completion toast: **"Test script generation completed"**
 
-- `REACT_APP_API_BASE`
-- `REACT_APP_BACKEND_URL`
-- `REACT_APP_FRONTEND_URL`
-- `REACT_APP_WS_URL`
-- `REACT_APP_NODE_ENV`
-- `REACT_APP_NEXT_TELEMETRY_DISABLED`
-- `REACT_APP_ENABLE_SOURCE_MAPS`
-- `REACT_APP_PORT`
-- `REACT_APP_TRUST_PROXY`
-- `REACT_APP_LOG_LEVEL`
-- `REACT_APP_HEALTHCHECK_PATH`
-- `REACT_APP_FEATURE_FLAGS`
-- `REACT_APP_EXPERIMENTS_ENABLED`
+### Execute Test Script (`/execute`)
+- Button: **Execute Test Script**
+- Progress bar animates ~2–3 seconds
+- Completion toast: **"Execution completed"**
+- Optional mocked run summary shown after completion
 
-They are read in: `src/config/runtimeConfig.js`.
-
----
-
-## Project structure
-
-- `src/layouts/` – Dashboard layout
-- `src/components/` – Reusable UI components (Sidebar, TopBar, Card, Button, UploadArea, FileList, etc.)
-- `src/pages/` – Routed pages (including `Login`)
-- `src/routes/` – React Router configuration (includes `ProtectedRoute`)
-- `src/context/` – Auth/UI/Toast contexts
-- `src/api/` – Fetch-based API client (present for future backend integration)
+### Generate Report (`/reports`)
+- Buttons: **Generate Report** and **View Report**
+- Generate runs progress and updates mock counts
+- View shows cards:
+  - Total Test Cases, Pass, Failed, Error
 
 ---
 
@@ -110,3 +96,14 @@ They are read in: `src/config/runtimeConfig.js`.
 TailwindCSS is used for styling. Theme tokens live in `tailwind.config.js` under `colors.brand.*`.
 
 A subtle background gradient helper class is provided: `bg-subtle-gradient`.
+
+---
+
+## Project structure
+
+- `src/layouts/` – Dashboard layout
+- `src/components/` – Reusable UI components (Sidebar, TopBar, Card, Button, ToastHost, etc.)
+- `src/pages/` – Routed pages (including `Login`)
+- `src/routes/` – React Router configuration (includes `ProtectedRoute`)
+- `src/context/` – Auth/UI/Toast contexts
+- `src/api/` – Fetch-based API client (present for future backend integration)
