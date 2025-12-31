@@ -4,11 +4,7 @@ import { Card } from "../components/Card";
 // PUBLIC_INTERFACE
 export function PlaceholderFeature({ title, description, bullets }) {
   /** Reusable placeholder content for feature sections not yet implemented. */
-  const safeDescription =
-    description ===
-    "Mock a refinement run that converts raw requirements into test-ready content."
-      ? ""
-      : description;
+  const safeDescription = description;
 
   return (
     <div className="space-y-5">
