@@ -1,5 +1,5 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { useAuth } from "../context/AuthContext";
@@ -8,6 +8,16 @@ import { useAuth } from "../context/AuthContext";
 export function AuthMock() {
   /** Authentication info page (mock/local-only auth). */
   const { user, isAuthenticated, logout, loading } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const onLogout = async () => {
+    await logout();
+    navigate("/login", {
+      replace: true,
+      state: { from: location.pathname + location.search + location.hash },
+    });
+  };
 
   return (
     <div className="space-y-5">
@@ -62,9 +72,9 @@ export function AuthMock() {
                 ({user?.email} • {user?.role})
               </span>
             </div>
-            <div>
-              <Button variant="ghost" size="sm" onClick={logout}>
-                Sign out
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="sm" onClick={onLogout}>
+                Logout
               </Button>
             </div>
           </div>
