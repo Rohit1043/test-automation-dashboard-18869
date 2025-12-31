@@ -12,11 +12,11 @@ React + TailwindCSS frontend implementing a classic, professional dashboard UI w
   - Generate Test Scripts (placeholder)
   - Execute Tests (placeholder)
   - Reports (placeholder)
-  - Login (real backend auth)
+  - Login (**mock/local-only auth**)
 - Corporate Navy theme (Primary `#1E3A8A`, Secondary `#F59E0B`)
 - Centralized runtime config loader with safe defaults
 - State management via React Context:
-  - Auth state (real login/logout/me)
+  - Auth state (**mock/local-only login/logout/me**)
   - UI state (sidebar collapse)
   - Toast notifications
 
@@ -34,43 +34,33 @@ Open: http://localhost:3000
 
 ---
 
-## Authentication
+## Authentication (Mock / Local-only)
 
 ### How it works
 
+- Authentication is **mocked locally** in `src/context/AuthContext.js`.
+- No backend calls are made for login/logout/me.
+- A minimal session object is stored in `localStorage` under:
+  - `ta_session`
 - Unauthenticated users attempting to access protected routes are redirected to:
   - `/login`
 - After successful login, the app redirects back to the originally requested route.
 - The TopBar shows the authenticated user and a working **Sign out** action.
 
-### Backend endpoints required
+### Sample credentials
 
-The frontend expects the backend at `REACT_APP_API_BASE` (or `REACT_APP_BACKEND_URL`) to provide:
+Two users are hardcoded:
 
-- `POST /auth/login`
-  - Request JSON: `{ "email": string, "password": string }`
-  - Response JSON should include an access token in one of these fields:
-    - `access_token` (preferred) or `accessToken` or `token`
-  - Optionally can include a user object in one of these fields:
-    - `user` or `me` or `profile`
+- Admin
+  - Email: `admin@example.com`
+  - Password: `Admin@123`
+  - Role: `admin`
+- User
+  - Email: `user@example.com`
+  - Password: `User@123`
+  - Role: `user`
 
-- `GET /auth/me`
-  - Requires header: `Authorization: Bearer <token>`
-  - Response can be either the user object directly or include it under:
-    - `user` / `me` / `profile`
-
-- `POST /auth/logout` (optional best-effort)
-  - Frontend calls it when logging out, but always clears local session client-side.
-
-### Token storage
-
-- The access token is stored in:
-  - memory (React state), and
-  - `localStorage` under key `ta_access_token` (to persist across reloads)
-- Every API request made via `src/api/client.js` attaches:
-  - `Authorization: Bearer <token>` when a token is available.
-
-> Note: If your backend uses httpOnly cookies instead of bearer tokens, the client will need an adjustment (credentials mode, no localStorage token).
+> Note: Passwords are stored in plain text only because this is mock/local auth. Do not use this approach for production authentication.
 
 ---
 
@@ -111,7 +101,7 @@ They are read in: `src/config/runtimeConfig.js`.
 - `src/pages/` – Routed pages (including `Login`)
 - `src/routes/` – React Router configuration (includes `ProtectedRoute`)
 - `src/context/` – Auth/UI/Toast contexts
-- `src/api/` – Fetch-based API client
+- `src/api/` – Fetch-based API client (present for future backend integration)
 
 ---
 

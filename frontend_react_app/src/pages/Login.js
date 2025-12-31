@@ -4,9 +4,14 @@ import { Card } from "../components/Card";
 import { Button } from "../components/Button";
 import { useAuth } from "../context/AuthContext";
 
+const SAMPLES = {
+  admin: { email: "admin@example.com", password: "Admin@123" },
+  user: { email: "user@example.com", password: "User@123" },
+};
+
 // PUBLIC_INTERFACE
 export function Login() {
-  /** Login page: authenticates against backend /auth/login and redirects on success. */
+  /** Login page: authenticates locally against mock credentials and redirects on success. */
   const { login, loading, error, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -45,13 +50,41 @@ export function Login() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Sign in</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Sign in to access the dashboard. This uses the backend authentication endpoints
-          configured by <code className="font-mono text-xs">REACT_APP_API_BASE</code>.
+          Sign in to access the dashboard. Authentication is currently{" "}
+          <span className="font-semibold">mocked locally</span> (no backend required).
         </p>
       </div>
 
       <Card title="Credentials" subtitle="Enter your email and password">
         <form onSubmit={onSubmit} className="space-y-4 max-w-xl">
+          <div className="flex items-center gap-2 flex-wrap">
+            <div className="text-xs text-gray-600 font-semibold">Quick fill:</div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setEmail(SAMPLES.admin.email);
+                setPassword(SAMPLES.admin.password);
+              }}
+              disabled={submitting}
+            >
+              Admin
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setEmail(SAMPLES.user.email);
+                setPassword(SAMPLES.user.password);
+              }}
+              disabled={submitting}
+            >
+              User
+            </Button>
+          </div>
+
           <div>
             <label className="block text-sm font-semibold text-gray-700">Email</label>
             <input
@@ -84,11 +117,7 @@ export function Login() {
           )}
 
           <div className="flex items-center gap-2">
-            <Button
-              type="submit"
-              variant="secondary"
-              disabled={loading || submitting}
-            >
+            <Button type="submit" variant="secondary" disabled={loading || submitting}>
               {submitting ? "Signing in..." : "Sign in"}
             </Button>
             <Button

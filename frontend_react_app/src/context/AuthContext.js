@@ -11,127 +11,140 @@ import { createApiClient } from "../api/client";
 
 const AuthContext = createContext(null);
 
-const STORAGE_KEY = "ta_access_token";
+/**
+ * We now store a minimal "session" object instead of an access token.
+ * This is intentionally local-only mock auth (no backend calls).
+ */
+const SESSION_STORAGE_KEY = "ta_session";
 
-const normalizeUser = (raw) => {
-  if (!raw) return null;
-  // Support a few common shapes returned by backends.
-  return {
-    id: raw.id || raw.user_id || raw.sub || raw.uid || "unknown",
-    name: raw.name || raw.full_name || raw.username || raw.email || "User",
-    email: raw.email || "",
-    role: raw.role || raw.user_role || raw.scope || "user",
-  };
+/**
+ * Hardcoded mock users (per requirement).
+ * NOTE: Passwords are stored in plain text only because this is mock/local auth.
+ */
+const MOCK_USERS = [
+  {
+    email: "admin@example.com",
+    password: "Admin@123",
+    role: "admin",
+    name: "Admin",
+  },
+  {
+    email: "user@example.com",
+    password: "User@123",
+    role: "user",
+    name: "User",
+  },
+];
+
+const safeReadSession = () => {
+  try {
+    const raw = window.localStorage.getItem(SESSION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+
+    // Validate shape to avoid restoring unexpected objects.
+    const email = typeof parsed.email === "string" ? parsed.email : "";
+    const role = typeof parsed.role === "string" ? parsed.role : "";
+    const name = typeof parsed.name === "string" ? parsed.name : "";
+
+    if (!email || !role) return null;
+
+    return { email, role, name: name || "User" };
+  } catch (_e) {
+    return null;
+  }
 };
 
-const extractTokenFromLoginResponse = (data) => {
-  if (!data) return null;
-  // Support common token fields.
-  return (
-    data.access_token ||
-    data.accessToken ||
-    data.token ||
-    (data.data && (data.data.access_token || data.data.token)) ||
-    null
-  );
-};
-
-const extractUserFromResponse = (data) => {
-  if (!data) return null;
-  // Support `user`, `me`, `profile`, etc.
-  return data.user || data.me || data.profile || data.account || null;
+const safeWriteSession = (session) => {
+  try {
+    if (!session) {
+      window.localStorage.removeItem(SESSION_STORAGE_KEY);
+      return;
+    }
+    window.localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify(session));
+  } catch (_e) {
+    // ignore storage failures (private mode, blocked storage, etc.)
+  }
 };
 
 // PUBLIC_INTERFACE
 export function AuthProvider({ children }) {
-  /** Provides real authentication state and actions backed by the configured backend. */
-  const [user, setUser] = useState(null);
-  const [accessToken, setAccessToken] = useState(null);
+  /** Provides mock authentication state and actions (local-only; no backend). */
+  const [user, setUser] = useState(null); // { email, role, name }
+  const [accessToken, setAccessToken] = useState(null); // kept for API compatibility; always null in mock auth
   const [loading, setLoading] = useState(true); // initial auth bootstrap
   const [error, setError] = useState(null);
 
   // Avoid setting state after unmount during async bootstrap/login flows.
   const aliveRef = useRef(true);
 
+  /**
+   * Keep exposing an api client so the rest of the app doesn't change.
+   * In mock mode, the api client will have no token. Consumers may still
+   * use it for non-auth endpoints later.
+   */
   const api = useMemo(
     () =>
       createApiClient({
-        getAccessToken: () => accessToken,
+        getAccessToken: () => null,
       }),
-    [accessToken]
+    []
   );
 
   const clearSession = useCallback(() => {
     setUser(null);
     setAccessToken(null);
     setError(null);
-    try {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } catch (_e) {
-      // ignore storage failures (private mode, etc.)
-    }
+    safeWriteSession(null);
   }, []);
 
-  const persistToken = useCallback((token) => {
-    setAccessToken(token);
-    try {
-      if (token) window.localStorage.setItem(STORAGE_KEY, token);
-      else window.localStorage.removeItem(STORAGE_KEY);
-    } catch (_e) {
-      // ignore
-    }
+  const persistSession = useCallback((session) => {
+    setUser(session);
+    setAccessToken(null);
+    safeWriteSession(session);
   }, []);
 
-  const refreshMe = useCallback(async () => {
-    if (!accessToken) return null;
-    const meResp = await api.authMe();
-    const meRaw = extractUserFromResponse(meResp) || meResp;
-    const me = normalizeUser(meRaw);
-    setUser(me);
-    return me;
-  }, [api, accessToken]);
+  const login = useCallback(async ({ email, password }) => {
+    setError(null);
 
-  const login = useCallback(
-    async ({ email, password }) => {
-      setError(null);
-      const resp = await api.authLogin({ email, password });
-      const token = extractTokenFromLoginResponse(resp);
+    const e = String(email || "").trim().toLowerCase();
+    const p = String(password || "");
 
-      if (!token) {
-        const e = new Error(
-          "Login succeeded but no access token was returned by the backend."
-        );
-        e.data = resp;
-        throw e;
-      }
+    const found = MOCK_USERS.find(
+      (u) => u.email.toLowerCase() === e && u.password === p
+    );
 
-      persistToken(token);
+    if (!found) {
+      const msg = "Invalid email or password.";
+      setError(msg);
+      const err = new Error(msg);
+      err.code = "AUTH_INVALID_CREDENTIALS";
+      return Promise.reject(err);
+    }
 
-      // Try to derive user from login response; fall back to /auth/me.
-      const userRaw = extractUserFromResponse(resp);
-      if (userRaw) {
-        setUser(normalizeUser(userRaw));
-      } else {
-        await refreshMe();
-      }
-
-      return true;
-    },
-    [api, persistToken, refreshMe]
-  );
+    const session = { email: found.email, role: found.role, name: found.name };
+    persistSession(session);
+    return true;
+  }, [persistSession]);
 
   const logout = useCallback(async () => {
     setError(null);
+    clearSession();
+  }, [clearSession]);
 
-    // Best-effort logout call; always clear session.
-    try {
-      if (accessToken) await api.authLogout();
-    } catch (_e) {
-      // ignore network/backend errors on logout
-    } finally {
-      clearSession();
+  const refreshMe = useCallback(async () => {
+    /**
+     * In mock auth mode there is no backend to refresh from.
+     * We simply return current user (or restored session if available).
+     */
+    const restored = safeReadSession();
+    if (restored) {
+      setUser(restored);
+      return restored;
     }
-  }, [accessToken, api, clearSession]);
+    return user;
+  }, [user]);
 
   useEffect(() => {
     aliveRef.current = true;
@@ -140,59 +153,37 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  // Bootstrap auth from localStorage token and validate via /auth/me.
+  // Bootstrap auth from localStorage session.
   useEffect(() => {
     (async () => {
       setLoading(true);
       setError(null);
 
-      let stored = null;
-      try {
-        stored = window.localStorage.getItem(STORAGE_KEY);
-      } catch (_e) {
-        stored = null;
+      const restored = safeReadSession();
+
+      if (!aliveRef.current) return;
+
+      if (restored) {
+        setUser(restored);
+        setAccessToken(null);
+      } else {
+        setUser(null);
+        setAccessToken(null);
       }
 
-      if (!stored) {
-        if (aliveRef.current) {
-          setLoading(false);
-          setUser(null);
-          setAccessToken(null);
-        }
-        return;
-      }
-
-      if (aliveRef.current) setAccessToken(stored);
-
-      try {
-        // Validate token and load user.
-        const meResp = await createApiClient({
-          getAccessToken: () => stored,
-        }).authMe();
-        const meRaw = extractUserFromResponse(meResp) || meResp;
-
-        if (aliveRef.current) {
-          setUser(normalizeUser(meRaw));
-          setLoading(false);
-        }
-      } catch (_e) {
-        // Token invalid/expired.
-        if (aliveRef.current) {
-          clearSession();
-          setLoading(false);
-        }
-      }
+      setLoading(false);
     })();
-  }, [clearSession]);
+  }, []);
 
   const value = useMemo(
     () => ({
       user,
-      accessToken,
-      isAuthenticated: Boolean(user && accessToken),
+      accessToken, // kept for backwards compatibility (always null in mock)
+      isAuthenticated: Boolean(user),
       loading,
       error,
-      api, // exposed so pages can reuse the authenticated client
+      api, // exposed so pages can reuse the client
+
       // PUBLIC_INTERFACE
       login,
       // PUBLIC_INTERFACE
