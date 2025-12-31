@@ -59,7 +59,7 @@ export function RefineRequirements() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Refine Requirement</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Mock a refinement run that converts raw requirements into test-ready content.
+          Simulate refining raw requirements into structured acceptance criteria.
         </p>
       </div>
 
