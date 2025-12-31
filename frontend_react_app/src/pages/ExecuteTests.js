@@ -85,7 +85,11 @@ export function ExecuteTests() {
           </Button>
         }
       >
-        <ProgressBar value={progress} label={running ? "Executing tests…" : "Progress"} className="max-w-xl" />
+        <ProgressBar
+          value={progress}
+          label={running ? "Executing tests…" : "Progress"}
+          className="max-w-xl"
+        />
 
         {summary && (
           <div className="mt-4 rounded-xl border border-gray-100 bg-white px-4 py-3">

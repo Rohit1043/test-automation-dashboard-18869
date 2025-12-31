@@ -59,7 +59,7 @@ export function GenerateTestScripts() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Generate Test Scripts</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Mock generating automation scripts from test cases (no backend).
+          Generate automation scripts from test cases (no backend).
         </p>
       </div>
 
