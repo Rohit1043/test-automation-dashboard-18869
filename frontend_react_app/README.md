@@ -1,82 +1,96 @@
-# Lightweight React Template for KAVIA
+# AI-enabled Test Automation Dashboard (Frontend)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+React + TailwindCSS frontend implementing a classic, professional dashboard UI with a persistent left sidebar, top bar branding, and deep-linkable routes for core workflows.
 
-## Features
+## Features implemented (frontend-only)
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- Dashboard shell: **Sidebar + TopBar + main content**
+- Routes:
+  - Home (mocked file/folder browsing + drag-and-drop uploads)
+  - Refine Requirements (placeholder)
+  - Generate Test Cases (placeholder)
+  - Generate Test Scripts (placeholder)
+  - Execute Tests (placeholder)
+  - Reports (placeholder)
+  - Auth (mock admin/end-user logins)
+- Corporate Navy theme (Primary `#1E3A8A`, Secondary `#F59E0B`)
+- Centralized runtime config loader with safe defaults
+- Basic state management via React Context:
+  - Auth state (mocked)
+  - UI state (sidebar collapse)
+  - Toast notifications
 
-## Getting Started
+> Note: No backend calls are made yet. An API client stub exists in `src/api/client.js`.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Getting started
 
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+From `frontend_react_app/`:
 
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+```bash
+npm start
 ```
 
-### Components
+Open: http://localhost:3000
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+---
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+## Environment variables
 
-## Learn More
+All env vars are optional. The app will run without them (defaults are used).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Copy the example file if desired:
 
-### Code Splitting
+```bash
+cp .env.example .env
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Supported variables:
 
-### Analyzing the Bundle Size
+- `REACT_APP_API_BASE`
+- `REACT_APP_BACKEND_URL`
+- `REACT_APP_FRONTEND_URL`
+- `REACT_APP_WS_URL`
+- `REACT_APP_NODE_ENV`
+- `REACT_APP_NEXT_TELEMETRY_DISABLED`
+- `REACT_APP_ENABLE_SOURCE_MAPS`
+- `REACT_APP_PORT`
+- `REACT_APP_TRUST_PROXY`
+- `REACT_APP_LOG_LEVEL`
+- `REACT_APP_HEALTHCHECK_PATH`
+- `REACT_APP_FEATURE_FLAGS`
+- `REACT_APP_EXPERIMENTS_ENABLED`
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+They are read in: `src/config/runtimeConfig.js`.
 
-### Making a Progressive Web App
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Project structure
 
-### Advanced Configuration
+- `src/layouts/` – Dashboard layout
+- `src/components/` – Reusable UI components (Sidebar, TopBar, Card, Button, UploadArea, FileList, etc.)
+- `src/pages/` – Routed pages
+- `src/routes/` – React Router configuration
+- `src/context/` – Auth/UI/Toast contexts
+- `src/api/` – Stub API client
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+---
 
-### Deployment
+## Styling / theme
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+TailwindCSS is used for styling. Theme tokens live in `tailwind.config.js` under `colors.brand.*`.
 
-### `npm run build` fails to minify
+A subtle background gradient helper class is provided: `bg-subtle-gradient`.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+
+## Future work (not implemented yet)
+
+- Real authentication (admin vs end-user)
+- Backend integration for:
+  - File storage and browsing
+  - Requirements ingestion and AI refinement
+  - Test case/script generation
+  - Test execution + WebSocket live logs
+  - Reports data retrieval
