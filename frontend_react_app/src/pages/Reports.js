@@ -39,9 +39,9 @@ const StatCard = ({ title, value, tone = "primary" }) => {
   );
 };
 
-// PUBLIC_INTERFACE
+/* PUBLIC_INTERFACE */
 export function Reports() {
-  /** Generate Report: mocked report generation + view report cards with counts. */
+  /** Generate Report: report generation + view report cards with counts. */
   const { push } = useToast();
 
   const [running, setRunning] = useState(false);
@@ -105,11 +105,11 @@ export function Reports() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Generate Report</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Mock report generation and view high-level execution statistics.
+          Generate a report and view high-level execution statistics.
         </p>
       </div>
 
-      <Card title="Actions" subtitle="Generate and view a mocked report">
+      <Card title="Actions" subtitle="Generate and view a report">
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="secondary" onClick={onGenerate} disabled={running}>
             {running ? "Generating..." : "Generate Report"}

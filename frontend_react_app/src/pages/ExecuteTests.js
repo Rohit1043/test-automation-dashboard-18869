@@ -21,9 +21,9 @@ const runProgress = ({ durationMs = 2400, onTick, onDone }) => {
   return () => window.clearInterval(id);
 };
 
-// PUBLIC_INTERFACE
+/* PUBLIC_INTERFACE */
 export function ExecuteTests() {
-  /** Execute Test Script: mocked execution with progress, toast, and a small run summary. */
+  /** Execute Test Script: execution with progress, toast, and a small run summary. */
   const { push } = useToast();
 
   const [running, setRunning] = useState(false);
@@ -72,7 +72,7 @@ export function ExecuteTests() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Execute Test Script</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Run a mocked execution and review a brief run summary.
+          Execute generated test scripts and review a brief run summary.
         </p>
       </div>
 

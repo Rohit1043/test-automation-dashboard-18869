@@ -15,7 +15,7 @@ export function PlaceholderFeature({ title, description, bullets }) {
         ) : null}
       </div>
 
-      <Card title="Coming soon" subtitle="This section is currently mocked">
+      <Card title="Coming soon" subtitle="This section is currently in progress">
         <div className="text-sm text-gray-700 space-y-3">
           <p>
             This UI is intentionally front-end only for now. Backend integration will be added in a later step.

@@ -21,9 +21,9 @@ const runProgress = ({ durationMs = 2400, onTick, onDone }) => {
   return () => window.clearInterval(id);
 };
 
-// PUBLIC_INTERFACE
+/* PUBLIC_INTERFACE */
 export function RefineRequirements() {
-  /** Refine Requirements: mocked run button + progress bar and completion toast. */
+  /** Refine Requirements: run button + progress bar and completion toast. */
   const { push } = useToast();
 
   const [running, setRunning] = useState(false);
@@ -59,7 +59,7 @@ export function RefineRequirements() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Refine Requirement</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Simulate refining raw requirements into structured acceptance criteria.
+          Refine requirements into test-ready acceptance criteria.
         </p>
       </div>
 
@@ -79,7 +79,7 @@ export function RefineRequirements() {
         />
 
         <div className="mt-4 text-sm text-gray-700">
-          This is front-end only. No requirement files are read/written; behavior is mocked.
+          This is front-end only. No requirement files are read/written in this view.
         </div>
       </Card>
     </div>

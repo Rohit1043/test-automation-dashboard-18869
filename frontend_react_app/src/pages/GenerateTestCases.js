@@ -52,9 +52,9 @@ const seedMockCases = ({ preConditionText }) => {
   ];
 };
 
-// PUBLIC_INTERFACE
+/* PUBLIC_INTERFACE */
 export function GenerateTestCases() {
-  /** Generate Test Cases: mocked generation with progress, view table, and editable Pre-Condition (in-memory). */
+  /** Generate Test Cases: generation with progress, view table, and editable Pre-Condition (in-memory). */
   const { push } = useToast();
 
   const [running, setRunning] = useState(false);

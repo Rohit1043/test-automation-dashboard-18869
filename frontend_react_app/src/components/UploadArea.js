@@ -25,7 +25,7 @@ export function UploadArea({ onFilesUploaded }) {
   const [isDragging, setIsDragging] = useState(false);
   const [uploads, setUploads] = useState([]);
 
-  const acceptHint = useMemo(() => "Any file type (mock upload)", []);
+  const acceptHint = useMemo(() => "Any file type (simulated upload)", []);
 
   const simulateUpload = (files) => {
     const newItems = Array.from(files).map((file) => ({

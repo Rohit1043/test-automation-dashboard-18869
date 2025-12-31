@@ -187,7 +187,7 @@ export function Home() {
           </ol>
         </Card>
 
-        <Card title="Status" subtitle="Mocked interactions">
+        <Card title="Status" subtitle="Current interactions">
           <div className="text-sm text-gray-700 space-y-2">
             <div className="flex items-center justify-between">
               <span>Selection</span>
@@ -195,7 +195,7 @@ export function Home() {
             </div>
             <div className="flex items-center justify-between">
               <span>Upload</span>
-              <span className="font-bold text-brand-success">Mocked</span>
+              <span className="font-bold text-brand-success">Simulated</span>
             </div>
             <div className="flex items-center justify-between">
               <span>Persistence</span>
@@ -210,7 +210,7 @@ export function Home() {
               Folder selection uses <code className="font-mono text-xs">webkitdirectory</code>, which
               is supported in Chromium-based browsers.
             </p>
-            <p>All actions are mocked locally—no backend calls are made.</p>
+            <p>All actions run locally—no backend calls are made.</p>
           </div>
         </Card>
       </div>

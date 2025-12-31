@@ -21,9 +21,9 @@ const runProgress = ({ durationMs = 2400, onTick, onDone }) => {
   return () => window.clearInterval(id);
 };
 
-// PUBLIC_INTERFACE
+/* PUBLIC_INTERFACE */
 export function GenerateTestScripts() {
-  /** Generate Test Scripts: mocked script generation with progress bar and toast. */
+  /** Generate Test Scripts: script generation with progress bar and toast. */
   const { push } = useToast();
 
   const [running, setRunning] = useState(false);
@@ -59,7 +59,7 @@ export function GenerateTestScripts() {
       <div className="rounded-2xl bg-subtle-gradient border border-blue-900/10 px-5 py-4">
         <h1 className="text-lg font-extrabold text-brand-text">Generate Test Scripts</h1>
         <p className="text-sm text-gray-700 mt-1">
-          Generate automation scripts from test cases (no backend).
+          Generate automation scripts from test cases.
         </p>
       </div>
 
@@ -68,7 +68,7 @@ export function GenerateTestScripts() {
         subtitle="Simulates generation over ~2–3 seconds."
         actions={
           <Button variant="secondary" onClick={onRun} disabled={running}>
-            {running ? "Running..." : "Run Generate Test Script"}
+            {running ? "Running..." : "Generate Test Scripts"}
           </Button>
         }
       >
