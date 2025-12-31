@@ -95,7 +95,7 @@ export function Sidebar() {
           <IconNavItem
             to="/auth"
             icon={<Icon pathD="M12 12a4 4 0 1 0-4-4 4 4 0 0 0 4 4zm7 10a7 7 0 0 0-14 0" />}
-            label="Auth (Mock)"
+            label="Auth"
             collapsed={sidebarCollapsed}
           />
         </div>

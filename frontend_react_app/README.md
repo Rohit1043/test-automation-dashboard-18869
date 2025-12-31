@@ -2,7 +2,7 @@
 
 React + TailwindCSS frontend implementing a classic, professional dashboard UI with a persistent left sidebar, top bar branding, and deep-linkable routes for core workflows.
 
-## Features implemented (frontend-only)
+## Features implemented
 
 - Dashboard shell: **Sidebar + TopBar + main content**
 - Routes:
@@ -12,15 +12,13 @@ React + TailwindCSS frontend implementing a classic, professional dashboard UI w
   - Generate Test Scripts (placeholder)
   - Execute Tests (placeholder)
   - Reports (placeholder)
-  - Auth (mock admin/end-user logins)
+  - Login (real backend auth)
 - Corporate Navy theme (Primary `#1E3A8A`, Secondary `#F59E0B`)
 - Centralized runtime config loader with safe defaults
-- Basic state management via React Context:
-  - Auth state (mocked)
+- State management via React Context:
+  - Auth state (real login/logout/me)
   - UI state (sidebar collapse)
   - Toast notifications
-
-> Note: No backend calls are made yet. An API client stub exists in `src/api/client.js`.
 
 ---
 
@@ -33,6 +31,46 @@ npm start
 ```
 
 Open: http://localhost:3000
+
+---
+
+## Authentication
+
+### How it works
+
+- Unauthenticated users attempting to access protected routes are redirected to:
+  - `/login`
+- After successful login, the app redirects back to the originally requested route.
+- The TopBar shows the authenticated user and a working **Sign out** action.
+
+### Backend endpoints required
+
+The frontend expects the backend at `REACT_APP_API_BASE` (or `REACT_APP_BACKEND_URL`) to provide:
+
+- `POST /auth/login`
+  - Request JSON: `{ "email": string, "password": string }`
+  - Response JSON should include an access token in one of these fields:
+    - `access_token` (preferred) or `accessToken` or `token`
+  - Optionally can include a user object in one of these fields:
+    - `user` or `me` or `profile`
+
+- `GET /auth/me`
+  - Requires header: `Authorization: Bearer <token>`
+  - Response can be either the user object directly or include it under:
+    - `user` / `me` / `profile`
+
+- `POST /auth/logout` (optional best-effort)
+  - Frontend calls it when logging out, but always clears local session client-side.
+
+### Token storage
+
+- The access token is stored in:
+  - memory (React state), and
+  - `localStorage` under key `ta_access_token` (to persist across reloads)
+- Every API request made via `src/api/client.js` attaches:
+  - `Authorization: Bearer <token>` when a token is available.
+
+> Note: If your backend uses httpOnly cookies instead of bearer tokens, the client will need an adjustment (credentials mode, no localStorage token).
 
 ---
 
@@ -70,10 +108,10 @@ They are read in: `src/config/runtimeConfig.js`.
 
 - `src/layouts/` – Dashboard layout
 - `src/components/` – Reusable UI components (Sidebar, TopBar, Card, Button, UploadArea, FileList, etc.)
-- `src/pages/` – Routed pages
-- `src/routes/` – React Router configuration
+- `src/pages/` – Routed pages (including `Login`)
+- `src/routes/` – React Router configuration (includes `ProtectedRoute`)
 - `src/context/` – Auth/UI/Toast contexts
-- `src/api/` – Stub API client
+- `src/api/` – Fetch-based API client
 
 ---
 
@@ -82,15 +120,3 @@ They are read in: `src/config/runtimeConfig.js`.
 TailwindCSS is used for styling. Theme tokens live in `tailwind.config.js` under `colors.brand.*`.
 
 A subtle background gradient helper class is provided: `bg-subtle-gradient`.
-
----
-
-## Future work (not implemented yet)
-
-- Real authentication (admin vs end-user)
-- Backend integration for:
-  - File storage and browsing
-  - Requirements ingestion and AI refinement
-  - Test case/script generation
-  - Test execution + WebSocket live logs
-  - Reports data retrieval
