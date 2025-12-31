@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "../components/Card";
 import { Button } from "../components/Button";
@@ -16,6 +16,7 @@ export function Login() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Keep redirect behavior: either the intended route (set by ProtectedRoute) or "/".
   const from = useMemo(() => {
     const st = location.state;
     return (st && st.from) || "/";
@@ -24,23 +25,25 @@ export function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [localError, setLocalError] = useState(null);
 
-  // If already authenticated, bounce home (or to requested path).
-  if (isAuthenticated) {
-    window.setTimeout(() => navigate(from, { replace: true }), 0);
-  }
+  // If already authenticated, bounce to intended route (or "/") without rendering a flashing form.
+  useEffect(() => {
+    if (!isAuthenticated) return;
+    navigate(from, { replace: true });
+  }, [isAuthenticated, from, navigate]);
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setLocalError(null);
     setSubmitting(true);
+
     try {
       await login({ email, password });
       navigate(from, { replace: true });
-    } catch (err) {
-      setLocalError(err?.message || "Login failed");
     } finally {
+      /**
+       * AuthContext is the single source of truth for invalid-credentials errors.
+       * We intentionally do not do network-based error handling here.
+       */
       setSubmitting(false);
     }
   };
@@ -110,9 +113,9 @@ export function Login() {
             />
           </div>
 
-          {(localError || error) && (
+          {error && (
             <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-900">
-              {localError || error}
+              {error}
             </div>
           )}
 
